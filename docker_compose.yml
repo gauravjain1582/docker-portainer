@@ -1,0 +1,29 @@
+version: '3.5'
+services:
+
+  portainer:
+    image: portainer/portainer
+    deploy:
+      placement:
+        constraints:
+          - "node.role == manager"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.frontend.passHostHeader=true"
+        - "traefik.frontend.rule=Host:portainer.vlekh.net, http://portainer.vlekh.net"
+        - "traefik.backend=portainer_portainer"
+        - "traefik.docker.network=traefik"
+        - "traefik.entryPoint=https"
+        - "traefik.port=9000"
+    ports:
+      - 9000:9000
+    networks:
+      - traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /gfs_mount/portainer/:/data
+
+networks:
+  traefik:
+    external: true
+    name: traefik
